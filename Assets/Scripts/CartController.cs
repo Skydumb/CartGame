@@ -32,7 +32,7 @@ public class CartController : MonoBehaviour
         if (transform.position.z - destination.z < 0) { z = -1; }
         else { z = 1; }
         float distance = Vector3.Distance(transform.position, destination);
-        while (Vector3.Distance(transform.position, destination) <= distance)
+        while (Vector3.Distance(transform.position, destination) >= distance)
         {
             distance = Vector3.Distance(transform.position, destination);
             transform.Translate(new Vector3(0, 0, z) * speed * Time.deltaTime);
