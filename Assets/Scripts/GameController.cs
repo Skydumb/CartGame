@@ -57,17 +57,21 @@ public class GameController : MonoBehaviour
     }
     public void UpdateCart(int direction)
     {
-        print(cartDestinations.Length);
         if (currentCDest + direction >= 1 && currentCDest + direction <= cartDestinations.Length)
         {
             currentCDest += direction;
-            if (System.Math.Sign(direction) == 1 && !levelObstacles[currentCDest].ContainsValue(true))
+            if (System.Math.Sign(direction) == 1)
             {
-                cartController.IMoveTo(cartDestinations[currentCDest]);
+                if (!levelObstacles[currentCDest - 1].ContainsValue(true))
+                {
+                    print(cartDestinations[currentCDest - 1]);
+                    cartController.IMoveTo(cartDestinations[currentCDest - 1]);
+                }
             }
-            else if (!levelObstacles[currentCDest + 1].ContainsValue(true))
+            else if (!levelObstacles[currentCDest].ContainsValue(true))
             {
-                cartController.IMoveTo(cartDestinations[currentCDest]);
+                print(cartDestinations[currentCDest - 1]);
+                cartController.IMoveTo(cartDestinations[currentCDest - 1]);
             }
         }
     }

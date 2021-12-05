@@ -500,8 +500,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79e9dc38e18a4604fa9f566f92d3b60c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2.5
-  destination: {fileID: 0}
+  speed: 0.5
   isCartMoving: 0
 --- !u!1 &963194225
 GameObject:
