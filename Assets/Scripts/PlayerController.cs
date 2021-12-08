@@ -33,29 +33,15 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
+    /// <summary>
+    /// Makes the object move in and look toward one of eight directions on a two dimensional plane(x, z)
+    /// </summary>
     private void Move()
     {
         Vector2 direction = new Vector2(0, 0);
         if (Input.anyKey)
         {
-            if (Input.GetKey(KeyCode.W))
-            {
-                direction.y++;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                direction.x++;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                direction.y--;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                direction.x--;
-            }
-            direction.Normalize();
+            direction = KeyDirection();
         }
         Vector3 threeDimDirection = new Vector3(direction.y, 0, direction.x);
         transform.Translate(threeDimDirection * speed * Time.deltaTime, Space.World);
@@ -69,6 +55,35 @@ public class PlayerController : MonoBehaviour
             Interact();
         }
     }
+    /// <summary>
+    /// Returns a vector2 based on wich of the WASD keys are pressed
+    /// </summary>
+    /// <returns></returns>
+    private Vector2 KeyDirection()
+    {
+        Vector2 vector2 = new Vector2(0, 0);
+        if (Input.GetKey(KeyCode.W))
+        {
+            vector2.y++;
+        }
+        if (Input.GetKey(KeyCode.A))
+        {
+            vector2.x++;
+        }
+        if (Input.GetKey(KeyCode.S))
+        {
+            vector2.y--;
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            vector2.x--;
+        }
+        vector2.Normalize();
+        return vector2;
+    }
+    /// <summary>
+    /// Makes the object follow and align with the cart object
+    /// </summary>
     private void FollowCart()
     {
         transform.position = cart.transform.position + cartRideOffset;
@@ -90,6 +105,9 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    /// <summary>
+    /// Selects an object to trigger an "interaction" with
+    /// </summary>
     private void Interact()
     {
         GameObject currentInteractee = interactibles[0];
@@ -103,7 +121,7 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
+    // Adds or removes a gameobject to the interactibles list
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Interactible"))

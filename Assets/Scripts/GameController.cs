@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour
     public List<GameObject> currentPrefabs = new List<GameObject>();
     public Dictionary<string, GameObject> propNames = new Dictionary<string, GameObject>();
     public Dictionary<string, int> propIndexes = new Dictionary<string, int>();
+    // Collection of presets to assist the game controller in adding prefabs to the scene
     List<PropPreset> propPresets = new List<PropPreset>() 
     { new PropPreset(0, new Vector3(1, 2, -8), "Tutorial_Gate"), new PropPreset(1, new Vector3(0, 1, -10), "Tutorial_Gate", 1), new PropPreset(2, new Vector3(1.5f, 7.25f, -33), "Tutorial_Drawbridge", 3), new PropPreset(1, new Vector3(0, 1, -29), "Tutorial_Drawbridge", 3),
     new PropPreset(1, new Vector3(3, 1, -29), "Tutorial_Drawbridge", 3) };
@@ -38,7 +39,10 @@ public class GameController : MonoBehaviour
     {
         
     }
-
+    /// <summary>
+    /// Instantiates prefabs decided by the propPresets collection and sets the public values of the relevant attached scripts
+    /// </summary>
+    /// <param name="preset"></param>
     void AddToScene(PropPreset preset)
     {
         currentPrefabs.Add(Instantiate(worldPrefabs[preset.prefabIndex], preset.position, worldPrefabs[0].transform.rotation));
@@ -92,6 +96,10 @@ public class GameController : MonoBehaviour
             else activatedController.Blocking = true;
         }
     }
+    /// <summary>
+    /// Gives the cart a destination from the cartDestinations collection and checks if the cart is allowed to move to it
+    /// </summary>
+    /// <param name="direction"></param>
     public void UpdateCart(int direction)
     {
         if (currentCDest + direction >= 1 && currentCDest + direction <= cartDestinations.Length)
@@ -112,6 +120,11 @@ public class GameController : MonoBehaviour
             else currentCDest -= direction;
         }
     }
+    /// <summary>
+    /// Plays a sound from the audioClips collection
+    /// </summary>
+    /// <param name="soundIndex"></param>
+    /// <param name="pitch">The pitch the audio clip is played at, defaults to 1</param>
     public void PlaySound(int soundIndex, float pitch = 1)
     {
         audioSource.clip = audioClips[soundIndex];

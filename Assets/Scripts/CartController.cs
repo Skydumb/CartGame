@@ -9,7 +9,7 @@ public class CartController : MonoBehaviour
     private float tolerance;
     public Vector3 destination;
     private Vector3 position;
-    public static float distanceTravelled = 0;
+    public static float totalDistanceTravelled = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -28,12 +28,15 @@ public class CartController : MonoBehaviour
         }
         else isCartMoving = false;
     }
+    /// <summary>
+    /// Moves the object toward the destination and adds the distance travelled to the totalDistanceTravelled variable
+    /// </summary>
     private void MoveTo()
     {
         position = transform.position;
         Vector3 heading = destination - transform.position;
         transform.position += (heading / heading.magnitude) * speed * Time.deltaTime;
-        if (heading.magnitude < tolerance) { transform.position = destination; print(Mathf.Round(distanceTravelled) + " Meters travelled in total!"); }
-        distanceTravelled += Vector3.Distance(position, transform.position);
+        if (heading.magnitude < tolerance) { transform.position = destination; print(Mathf.Round(totalDistanceTravelled) + " Meters travelled in total!"); }
+        totalDistanceTravelled += Vector3.Distance(position, transform.position);
     }
 }

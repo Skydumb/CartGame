@@ -21,7 +21,10 @@ public class ActivatedController : MonoBehaviour
     {
 
     }
-
+    /// <summary>
+    /// Starts an activated behaviour decided by the propIndex parameter
+    /// </summary>
+    /// <param name="propIndex"></param>
     public void Activate(int propIndex)
     {
         switch (propIndex)
@@ -48,7 +51,10 @@ public class ActivatedController : MonoBehaviour
                 break;
         }
     }
-
+    /// <summary>
+    /// Moves the object towards its destination the snaps it in place, updates every frame it's active
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator Movement()
     {
         active = true;

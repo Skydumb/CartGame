@@ -23,7 +23,10 @@ public class InteractionScript : MonoBehaviour
     {
         
     }
-
+    /// <summary>
+    /// Starts an "interaction" decided by the interactibleId member of the script
+    /// </summary>
+    /// <returns></returns>
     public int Interact()
     {
         switch (interactibleId)

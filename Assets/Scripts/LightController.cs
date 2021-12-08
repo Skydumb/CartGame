@@ -15,7 +15,7 @@ public class LightController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float A = (CartController.distanceTravelled % dayLenght) / dayLenght;
+        float A = (CartController.totalDistanceTravelled % dayLenght) / dayLenght;
         transform.eulerAngles = new Vector3(Mathf.Abs(Mathf.Cos(Mathf.PI * (A)) * 65) - 15, Mathf.Sin(Mathf.PI * 2 * (A)) * -90);
     }
 }
