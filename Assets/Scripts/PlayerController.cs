@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float speed = 5;
-    public List<string> interactibles = new List<string>();
+    public float rotationSpeed = 45;
+    public List<GameObject> interactibles = new List<GameObject>();
     public string moveType = "free";
     GameObject cart;
     public Vector3 cartRideOffset = new Vector3(0, 1, -2);
@@ -35,38 +36,50 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        float keysDown = 0;
-        bool horizontal = false;
-        bool depth = false;
         float depthAcc = 0;
         float horizontalAcc = 0;
+        float desiredAngle = 0;
         if (Input.anyKey)
         {
             if (Input.GetKey(KeyCode.W)){
-                keysDown++;
-                depth = true;
                 depthAcc = 1;
+                desiredAngle = 90;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                keysDown++;
-                horizontal = true;
                 horizontalAcc = 1;
+                desiredAngle = 180;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                keysDown++;
-                horizontal = true;
                 horizontalAcc = -1;
+                desiredAngle = 0;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                keysDown++;
-                depth = true;
                 depthAcc = -1;
+                desiredAngle = -90;
+            }
+            switch(depthAcc, horizontalAcc)
+            {
+                case (1f, 1f):
+                    desiredAngle = 135;
+                    break;
+                case (1f, -1f):
+                    desiredAngle = 45;
+                    break;
+                case (-1f, 1f):
+                    desiredAngle = -135;
+                    break;
+                case (-1f, -1f):
+                    desiredAngle = -45;
+                    break;
+                default:
+                    break;
             }
         }
-        if (depth && horizontal)
+        float totAcc = depthAcc * Mathf.Sign(depthAcc) + horizontalAcc * Mathf.Sign(horizontalAcc);
+        if (totAcc == 2)
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime * 0.7f * depthAcc, Space.World);
             transform.Translate(Vector3.back * speed * Time.deltaTime * 0.7f * horizontalAcc, Space.World);
@@ -75,6 +88,16 @@ public class PlayerController : MonoBehaviour
         {
             transform.Translate(Vector3.right * speed * Time.deltaTime * depthAcc, Space.World);
             transform.Translate(Vector3.back * speed * Time.deltaTime * horizontalAcc, Space.World);
+        }
+        if (totAcc != 0)
+        {
+            float yRotation = transform.eulerAngles.y;
+            if ((yRotation - desiredAngle) * Mathf.Sign(yRotation - desiredAngle) < rotationSpeed * Time.deltaTime)
+                transform.eulerAngles = new Vector3(0, desiredAngle);
+            else if (yRotation - desiredAngle > 0)
+                transform.eulerAngles = new Vector3(0, yRotation - rotationSpeed * Time.deltaTime);
+            else
+                transform.eulerAngles = new Vector3(0, yRotation + rotationSpeed * Time.deltaTime);
         }
         if (Input.GetKeyDown(KeyCode.Space) && interactibles.Count > 0)
         {
@@ -103,7 +126,7 @@ public class PlayerController : MonoBehaviour
     }
     private void Interact()
     {
-        GameObject currentInteractee = GameObject.Find(interactibles[0]);
+        GameObject currentInteractee = interactibles[0];
         InteractionScript interactionScript = currentInteractee.GetComponent<InteractionScript>();
         switch (interactionScript.Interact())
         {
@@ -119,14 +142,14 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag("Interactible"))
         {
-            interactibles.Add(other.name);
+            interactibles.Add(other.gameObject);
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Interactible"))
         {
-            interactibles.Remove(other.name);
+            interactibles.Remove(other.gameObject);
         }
     }
 }

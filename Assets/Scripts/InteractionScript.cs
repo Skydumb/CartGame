@@ -9,6 +9,7 @@ public class InteractionScript : MonoBehaviour
     public string instanceTag;
     private GameController gameControllerScript;
     public int isObstacle;
+    public int duplicateId;
 
     // Start is called before the first frame update
     void Start()
@@ -31,8 +32,8 @@ public class InteractionScript : MonoBehaviour
                 return 0;
             case 1:
                 //Lever
+                gameControllerScript.levelObstacles[isObstacle][duplicateId + instanceTag] = !gameControllerScript.levelObstacles[isObstacle][duplicateId + instanceTag];
                 gameControllerScript.Activate(instanceTag);
-                gameControllerScript.levelObstacles[isObstacle][instanceTag] = !gameControllerScript.levelObstacles[isObstacle][instanceTag];
                 return 1;
             default:
                 return 0;

@@ -6,38 +6,30 @@ public class CartController : MonoBehaviour
 {
     public float speed = 1f;
     public bool isCartMoving = false;
+    private float tolerance;
+    public Vector3 destination;
 
     // Start is called before the first frame update
     void Start()
     {
-
+        tolerance = speed * Time.deltaTime;
+        destination = transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    public void IMoveTo(Vector3 destination)
-    {
-        StopCoroutine(nameof(MoveTo));
-        StartCoroutine(MoveTo(destination));
-    }
-    private IEnumerator MoveTo(Vector3 destination)
-    {
-        print("bingus");
-        isCartMoving = true;
-        int z;
-        if (transform.position.z - destination.z < 0) { z = -1; }
-        else { z = 1; }
-        float distance = Vector3.Distance(transform.position, destination);
-        while (Vector3.Distance(transform.position, destination) >= distance)
+        if (destination != transform.position)
         {
-            distance = Vector3.Distance(transform.position, destination);
-            transform.Translate(new Vector3(0, 0, z) * speed * Time.deltaTime);
-            yield return null;
+            isCartMoving = true;
+            MoveTo();
         }
-        isCartMoving = false;
+        else isCartMoving = false;
+    }
+    private void MoveTo()
+    {
+        Vector3 heading = destination - transform.position;
+        transform.position += (heading / heading.magnitude) * speed * Time.deltaTime;
+        if (heading.magnitude < tolerance) { transform.position = destination; }
     }
 }
