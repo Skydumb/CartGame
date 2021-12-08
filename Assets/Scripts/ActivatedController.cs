@@ -5,9 +5,12 @@ using UnityEngine;
 public class ActivatedController : MonoBehaviour
 {
     private Vector3 destination;
-    private bool state = false;
+
+    public bool State { get; private set; } = false;
     private bool active = false;
     public int obstacleDependent = 0;
+    public string instanceTag;
+    public bool Blocking { get { return GameController.levelObstacles[obstacleDependent][instanceTag]; } set { GameController.levelObstacles[obstacleDependent][instanceTag] = value; } }
     // Start is called before the first frame update
     void Start()
     {
@@ -26,20 +29,22 @@ public class ActivatedController : MonoBehaviour
             case 0:
                 //Gate
                 gameObject.SetActive(!gameObject.activeSelf);
+                Blocking = gameObject.activeSelf;
                 break;
             case 2:
                 //Dropping platform
                 if (!active)
                 {
-                    if (state)
+                    if (State)
                         destination = transform.position - Vector3.down * 7;
                     else
                         destination = transform.position - Vector3.up * 7;
-                    state = !state;
+                    State = !State;
                     StartCoroutine(Movement());
                 }
                 break;
             default:
+                Blocking = !Blocking;
                 break;
         }
     }
@@ -57,6 +62,7 @@ public class ActivatedController : MonoBehaviour
             if (heading.magnitude < tolerance) { transform.position = destination; }
             yield return null;
         }
+        Blocking = !State;
         active = false;
     }
 }

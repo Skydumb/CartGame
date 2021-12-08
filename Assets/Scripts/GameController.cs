@@ -13,11 +13,14 @@ public class GameController : MonoBehaviour
     new PropPreset(1, new Vector3(3, 1, -29), "Tutorial_Drawbridge", 3) };
     private CartController cartController;
     public Vector3[] cartDestinations = new Vector3[] { new Vector3(1.5f, 1.5f, 3f), new Vector3(1.5f, 1.5f, 20f) };
-    public List<Dictionary<string, bool>> levelObstacles = new List<Dictionary<string, bool>>() { };
+    public static List<Dictionary<string, bool>> levelObstacles = new List<Dictionary<string, bool>>() { };
+    public AudioClip[] audioClips = new AudioClip[0];
     public int currentCDest = 1;
+    private AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         cartController = GameObject.Find("Cart").GetComponent<CartController>();
         for (int i = 0; i < cartDestinations.Length; i++)
         {
@@ -57,8 +60,10 @@ public class GameController : MonoBehaviour
         else if (currentObject.TryGetComponent(out ActivatedController activatedController))
         {
             activatedController.obstacleDependent = preset.isObstacle;
+            activatedController.instanceTag = preset.name;
             propNames.Add("a" + preset.name, currentObject);
             propIndexes.Add("a" + preset.name, preset.prefabIndex);
+            if (activatedController.obstacleDependent > 0) { levelObstacles[activatedController.obstacleDependent].Add(preset.name, true); }
         }
         else
         {
@@ -71,12 +76,20 @@ public class GameController : MonoBehaviour
     /// Calls the activate function of the targeted instantiated prefabs ActivatedController script.
     /// </summary>
     /// <param name="targetProp"></param>
-    public void Activate(string targetProp)
+    public void Activate(string targetProp, bool activate)
     {
         ActivatedController activatedController = propNames["a" + targetProp].GetComponent<ActivatedController>();
-        if (!levelObstacles[activatedController.obstacleDependent].ContainsValue(true))
+        int obstaclesIndex = activatedController.obstacleDependent;
+        if (!activate && activatedController.State) activatedController.Activate(propIndexes["a" + targetProp]);
+        else 
         {
-            activatedController.Activate(propIndexes["a" + targetProp]);
+            activatedController.Blocking = false;
+            if (!levelObstacles[obstaclesIndex].ContainsValue(true))
+            {
+                activatedController.Blocking = true;
+                activatedController.Activate(propIndexes["a" + targetProp]);
+            }
+            else activatedController.Blocking = true;
         }
     }
     public void UpdateCart(int direction)
@@ -98,6 +111,12 @@ public class GameController : MonoBehaviour
             }
             else currentCDest -= direction;
         }
+    }
+    public void PlaySound(int soundIndex, float pitch = 1)
+    {
+        audioSource.clip = audioClips[soundIndex];
+        audioSource.pitch = pitch;
+        audioSource.Play();
     }
 }
 /// <summary>

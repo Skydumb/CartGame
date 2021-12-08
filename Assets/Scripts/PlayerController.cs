@@ -36,68 +36,33 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        float depthAcc = 0;
-        float horizontalAcc = 0;
-        float desiredAngle = 0;
+        Vector2 direction = new Vector2(0, 0);
         if (Input.anyKey)
         {
-            if (Input.GetKey(KeyCode.W)){
-                depthAcc = 1;
-                desiredAngle = 90;
-            }
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.W))
             {
-                horizontalAcc = 1;
-                desiredAngle = 180;
+                direction.y++;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                horizontalAcc = -1;
-                desiredAngle = 0;
+                direction.x++;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                depthAcc = -1;
-                desiredAngle = -90;
+                direction.y--;
             }
-            switch(depthAcc, horizontalAcc)
+            if (Input.GetKey(KeyCode.D))
             {
-                case (1f, 1f):
-                    desiredAngle = 135;
-                    break;
-                case (1f, -1f):
-                    desiredAngle = 45;
-                    break;
-                case (-1f, 1f):
-                    desiredAngle = -135;
-                    break;
-                case (-1f, -1f):
-                    desiredAngle = -45;
-                    break;
-                default:
-                    break;
+                direction.x--;
             }
+            direction.Normalize();
         }
-        float totAcc = depthAcc * Mathf.Sign(depthAcc) + horizontalAcc * Mathf.Sign(horizontalAcc);
-        if (totAcc == 2)
+        Vector3 threeDimDirection = new Vector3(direction.y, 0, direction.x);
+        transform.Translate(threeDimDirection * speed * Time.deltaTime, Space.World);
+        if (direction != new Vector2(0,0))
         {
-            transform.Translate(Vector3.right * speed * Time.deltaTime * 0.7f * depthAcc, Space.World);
-            transform.Translate(Vector3.back * speed * Time.deltaTime * 0.7f * horizontalAcc, Space.World);
-        }
-        else
-        {
-            transform.Translate(Vector3.right * speed * Time.deltaTime * depthAcc, Space.World);
-            transform.Translate(Vector3.back * speed * Time.deltaTime * horizontalAcc, Space.World);
-        }
-        if (totAcc != 0)
-        {
-            float yRotation = transform.eulerAngles.y;
-            if ((yRotation - desiredAngle) * Mathf.Sign(yRotation - desiredAngle) < rotationSpeed * Time.deltaTime)
-                transform.eulerAngles = new Vector3(0, desiredAngle);
-            else if (yRotation - desiredAngle > 0)
-                transform.eulerAngles = new Vector3(0, yRotation - rotationSpeed * Time.deltaTime);
-            else
-                transform.eulerAngles = new Vector3(0, yRotation + rotationSpeed * Time.deltaTime);
+            Quaternion lookRotation = Quaternion.LookRotation(threeDimDirection);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
         }
         if (Input.GetKeyDown(KeyCode.Space) && interactibles.Count > 0)
         {
@@ -107,6 +72,7 @@ public class PlayerController : MonoBehaviour
     private void FollowCart()
     {
         transform.position = cart.transform.position + cartRideOffset;
+        transform.eulerAngles = cart.transform.eulerAngles + new Vector3(0, 180);
         if (Input.anyKey)
         {
             if (Input.GetKeyDown(KeyCode.A))
@@ -119,7 +85,7 @@ public class PlayerController : MonoBehaviour
             }
             else if (Input.GetKeyDown(KeyCode.Space) && !cart.GetComponent<CartController>().isCartMoving)
             {
-                transform.Translate(new Vector3(0, -1.5f, -1));
+                transform.Translate(new Vector3(0, -1.5f, 1));
                 moveType = "free";
             }
         }
